@@ -10,7 +10,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an C-.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -18,21 +18,24 @@ execute:
 
 **WD-1: I can import data from a *variety* of formats (e.g., csv, xlsx, txt, etc.).**
 
--   `csv` Example 1
+-   `csv` Example 1 (From Lab 2)
 
 ```{r}
 #| label: wd-1-csv-1
+mydata <- read.csv("surveys.csv")
+surveys <- read.csv("surveys.csv")
 
 ```
 
--   `csv` Example 2
+-   `csv` Example 2 (From Lab 3)
 
 ```{r}
 #| label: wd-1-csv-2
+data <- read_csv(here("teacher_evals.csv"))
 
 ```
 
--   `xlsx`
+-   `xlsx` (**SKIP RN)**
 
 ```{r}
 #| label: wd-1-xlsx
@@ -45,14 +48,24 @@ execute:
 
 ```{r}
 #| label: wd-2-ex-1
+# I edited my code from Lab 2 to be able to fit this criteria. 
+surveys_subset <- surveys |>
+  select(species, weight)
 
+ggplot(data = surveys_subset,
+       mapping = aes(y = species, x = weight)) +
+  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +
+  geom_boxplot(outlier.shape = NA)
 ```
 
 -   Example removing specified columns
 
 ```{r}
 #| label: wd-2-ex-2
-
+# I modified my lab 5, and a select statement and within it removed columns from my full join of the data sets to match the criteria above. 
+interview_full <- full_join(interview, get_fit_now_member, by = "person_id") |>
+  full_join(person, by = c("person_id" = "id")) |>
+  select(-address, -phone_number)
 ```
 
 -   Example selecting columns based on logical values (e.g., `starts_with()`, `ends_with()`, `contains()`, `where()`)
@@ -68,6 +81,8 @@ execute:
 
 ```{r}
 #| label: wd-3-numeric-ex-1
+interview_full |>
+  filter(license_id == 118009)
 
 ```
 
@@ -75,6 +90,9 @@ execute:
 
 ```{r}
 #| label: wd-3-numeric-ex-1
+witness1 <- person |>
+  filter(str_detect(address_street_name, "Northwestern Dr")) |>
+  filter(address_number == max(address_number))
 
 ```
 
@@ -82,6 +100,11 @@ execute:
 
 ```{r}
 #| label: wd-3-character
+crime_scene_report |>
+         filter(date == ("20180115"),
+         city == ("SQL City"),
+         type == ("murder")
+         )
 
 ```
 
@@ -89,6 +112,9 @@ execute:
 
 ```{r}
 #| label: wd-3-string
+witness1 <- person |>
+  filter(str_detect(address_street_name, "Northwestern Dr")) |>
+  filter(address_number == max(address_number))
 
 ```
 
@@ -96,6 +122,13 @@ execute:
 
 ```{r}
 #| label: wd-3-date
+# I edited my Lab 5, to include a lubridate function. 
+crime_scene_report |>
+  filter(
+    ymd(date) == ymd("20180115"),
+    city == "SQL City",
+    type == "murder"
+  )
 
 ```
 
@@ -105,6 +138,19 @@ execute:
 
 ```{r}
 #| label: wd-4-numeric-ex-1
+# I took my work from Challenge 2, and created a new variable a new numeric variable. 
+surveys <- surveys %>%
+  mutate(weight_kg = weight / 1000)
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species, color = sex)) +
+  geom_jitter(height = 0.25, alpha = 0.125) +
+  geom_boxplot(outlier.shape = NA) +
+  labs(
+    x = "Weight",
+    y = "Species",
+    title = "Rodent weight by species and sex"
+  ) +
+  scale_color_manual(values = c("F" = "#ff00f4", "M" = "#2261d8"))
 
 ```
 
@@ -112,6 +158,12 @@ execute:
 
 ```{r}
 #| label: wd-4-numeric-ex-2
+# I took code from my Challenge 4, alltered my summary table to instead create new numeric variables within the data set. 
+childcare_costs <- childcare_costs %>%
+  mutate(
+    center_average = (mfcc_infant + mfcc_toddler + mfcc_preschool) / 3,
+    home_average = (mc_infant + mc_toddler + mc_preschool) / 3
+  )
 
 ```
 
@@ -133,14 +185,31 @@ execute:
 
 ```{r}
 #| label: wd-4-string
-
+# I took code from my Lab 5, using stringr functions i altered my persons dataset to make all the names uppercase. 
+person <- person %>%
+  mutate(
+    name = str_to_upper(name)
+  )
+witness1 <- person |>
+  filter(str_detect(address_street_name, "Northwestern Dr")) |>
+  filter(address_number == max(address_number))
 ```
 
 -   Date (example must use functions from **lubridate**)
 
 ```{r}
 #| label: wd-4-date
+# I used code from my Lab 5, and created a new column data_clean where i filtered using a lubridate function within my new column. 
+crime_scene_report <- crime_scene_report %>%
+  mutate(date_clean = ymd(date))
 
+crime_scene_report %>%
+  filter(
+    date_clean == ymd("2018-01-15"),
+    city == "SQL City",
+    type == "murder"
+  )
+  
 ```
 
 **WD-5: I can use mutating joins to combine multiple dataframes.**
@@ -149,6 +218,12 @@ execute:
 
 ```{r}
 #| label: wd-5-left-ex-1
+# I took my code from Lab 5, altered it slightly to include a left join. 
+interview_full <- interview %>%
+  left_join(get_fit_now_member, by = "person_id") %>%
+  left_join(person, by = c("person_id" = "id"))
+interview_full %>%
+  filter(license_id == 118009)
 
 ```
 
@@ -156,7 +231,9 @@ execute:
 
 ```{r}
 #| label: wd-5-right
-
+# This is additional code to my summaries table in my Challenge 4. 
+counties_with_costs <- state_summary %>%
+  right_join(counties, by = "state_abbreviation")
 ```
 
 -   `left_join()` **or** `right_join()` Example 2
@@ -202,7 +279,19 @@ execute:
 
 ```{r}
 #| label: wd-7-long
-
+# Using code from my lab 5, i used a pivot longer function to make my dataframe go from wide to long.
+crime_filtered <- crime_scene_report %>%
+  filter(
+    date == "20180115",
+    city == "SQL City",
+    type == "murder"
+  )
+crime_long <- crime_filtered %>%
+  pivot_longer(
+    cols = c(date, city, type),  
+    names_to = "category",       
+    values_to = "details"       
+  )
 ```
 
 -   `pivot_wider()`
@@ -218,11 +307,11 @@ execute:
 
 The following assignments satisfy the above criteria:
 
--   Example 1
--   Example 2
--   Example 3
--   Example 4
--   Example 5
+-   Example 1 - Lab 1
+-   Example 2 - Lab 2
+-   Example 3 - Challenge 2
+-   Example 4 - Challenge 4
+-   Example 5 - Lab 5
 
 **R-2: I can write well documented and tidy code.**
 
@@ -230,6 +319,17 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-1
+# My code from Lab 2. 
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = hindfoot_length)) +
+  geom_point(alpha = 0.25) +                      
+  facet_wrap(~species) +                            
+  labs(
+    x = "Weight (g)",                               
+    y = "Hindfoot length (mm)",                    
+    title = "Species according to animal weight and hindfoot length",
+    subtitle = "Hindfoot length (mm)"
+  )
 
 ```
 
@@ -237,6 +337,36 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-2
+# Work from my Challenge 4. 
+center_data <- childcare_costs %>%
+  select(mfcc_infant, mfcc_toddler, mfcc_preschool) %>%
+  unlist(use.names = FALSE)
+
+home_data <- childcare_costs %>%
+  select(mc_infant, mc_toddler, mc_preschool) %>%
+  unlist(use.names = FALSE)
+
+plot_df <- tibble(
+  setting = c(rep("Center-based", length(center_data)),
+              rep("In-home",      length(home_data))),
+  cost = c(center_data, home_data)
+) %>%
+  filter(!is.na(cost)) %>%
+  mutate(setting = factor(setting, levels = c("In-home", "Center-based")))
+
+ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
+  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
+  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
+  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+  labs(
+    title = "Childcare Prices by Setting in California",
+    x = "Setting",
+    y = "Weekly Cost of Childcare $"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "left",
+  )
 
 ```
 
@@ -244,6 +374,21 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-3
+# I edited cide from my Lab 5 to include function formatting. 
+filter_crime <- function(data, crime_date, crime_city, crime_type)(
+  data %>%
+    filter(
+      date == crime_date,   
+      city == crime_city,   
+      type == crime_type    
+    )
+)
+sql_city_murder <- filter_crime(
+  data = crime_scene_report,
+  crime_date = "20180115",
+  crime_city = "SQL City",
+  crime_type = "murder"
+)
 
 ```
 
@@ -271,6 +416,36 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-1-num
+# Code from Challenge 4. 
+center_data <- childcare_costs %>%
+  select(mfcc_infant, mfcc_toddler, mfcc_preschool) %>%
+  unlist(use.names = FALSE)
+
+home_data <- childcare_costs %>%
+  select(mc_infant, mc_toddler, mc_preschool) %>%
+  unlist(use.names = FALSE)
+
+plot_df <- tibble(
+  setting = c(rep("Center-based", length(center_data)),
+              rep("In-home",      length(home_data))),
+  cost = c(center_data, home_data)
+) %>%
+  filter(!is.na(cost)) %>%
+  mutate(setting = factor(setting, levels = c("In-home", "Center-based")))
+
+ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
+  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
+  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
+  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+  labs(
+    title = "Childcare Prices by Setting in California",
+    x = "Setting",
+    y = "Weekly Cost of Childcare $"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "left",
+  )
 
 ```
 
@@ -278,6 +453,18 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-2-num-cat
+# Code from Lab 2. 
+ggplot(data = surveys,
+       mapping = aes(y = species, x = weight)) +
+  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +   
+  geom_boxplot(outlier.shape = NA) +                      
+  labs(
+    y = "Species",
+    x = NULL,
+    title = "Rodent weight by species",
+    subtitle = "Weight (g)"
+  ) +
+  theme(axis.text.y = element_text(angle = 45))    
 
 ```
 
@@ -301,6 +488,18 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-2-ex-1
+# My code from Lab 2. 
+ggplot(data = surveys,
+       mapping = aes(y = species, x = weight)) +
+  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +   
+  geom_boxplot(outlier.shape = NA) +                         
+  labs(
+    y = "Species",
+    x = NULL,
+    title = "Rodent weight by species",
+    subtitle = "Weight (g)"
+  ) +
+  theme(axis.text.y = element_text(angle = 45)) 
 
 ```
 
@@ -308,13 +507,37 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-2-ex-2
-
+# Im using code from my Challenge 2 and i adjusted the colors to be more accesible. 
+gplot(surveys, aes(x = weight, y = species, color = sex)) +
+  geom_jitter(height = 0.25, alpha = 0.125) +
+  geom_boxplot(outlier.shape = NA) +
+  labs(
+    x = "Weight",
+    y = "Species",
+    title = "Rodent weight by species and sex"
+  ) +
+  scale_color_manual(values = c("F" = "#0072B2",   
+                                "M" = "#E69F00"))
 ```
 
 -   I can modify my plot titles to clearly communicate the data context
 
 ```{r}
 #| label: dvs-2-ex-3
+# My code from Challenge 4. 
+ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
+  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
+  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
+  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+  labs(
+    title = "Childcare Prices by Setting in California",
+    x = "Setting",
+    y = "Weekly Cost of Childcare $"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "left"
+  )
 
 ```
 
@@ -329,6 +552,17 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-2-ex-5
+ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
+  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
+  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
+  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
+  labs(
+    title = "Childcare Prices by Setting in California",
+    x = "Setting",
+    y = "Weekly Cost of Childcare $"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "left")
 
 ```
 
@@ -338,13 +572,34 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-3-1-ex-1
-
+gplot(surveys, aes(x = weight, y = species, color = sex)) +
+  geom_jitter(height = 0.25, alpha = 0.125) +
+  geom_boxplot(outlier.shape = NA) +
+  labs(
+    x = "Weight",
+    y = "Species",
+    title = "Rodent weight by species and sex"
+  ) +
+  scale_color_manual(values = c("F" = "#0072B2",   
+                                "M" = "#E69F00"))
 ```
 
 -   I can use non-standard colors (Example 2)
 
 ```{r}
 #| label: dvs-3-1-ex-2
+ggplot(data = surveys,
+       mapping = aes(y = species, x = weight)) +
+  geom_jitter(width = 0.3, color = "#008467", alpha = 0.25) +   
+  geom_boxplot(outlier.shape = NA) +                         
+  labs(
+    y = "Species",
+    x = NULL,
+    title = "Rodent weight by species",
+    subtitle = "Weight (g)"
+  ) +
+  theme(axis.text.y = element_text(angle = 45)) 
+
 
 ```
 
@@ -368,7 +623,14 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-4-summarize
-
+summary_table <- childcare_costs |>
+  summarise(
+    center_mean   = mean(c(mfcc_infant, mfcc_toddler, mfcc_preschool), na.rm = TRUE),
+    center_median = median(c(mfcc_infant, mfcc_toddler, mfcc_preschool), na.rm = TRUE),
+    home_mean     = mean(c(mc_infant, mc_toddler, mc_preschool), na.rm = TRUE),
+    home_median   = median(c(mc_infant, mc_toddler, mc_preschool), na.rm = TRUE)
+  )
+view(summary_table)
 ```
 
 -   Example using `across()`
@@ -423,6 +685,18 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-7-ex-1
+ggplot(data = surveys,
+       mapping = aes(y = species, x = weight)) +
+  geom_jitter(width = 0.3, color = "#008467", alpha = 0.25) +   
+  geom_boxplot(outlier.shape = NA) +                         
+  labs(
+    y = "Species",
+    x = NULL,
+    title = "Rodent weight by species",
+    subtitle = "Weight (g)"
+  ) +
+  theme(axis.text.y = element_text(angle = 45)) 
+
 
 ```
 
@@ -430,6 +704,18 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-7-ex-2
+crime_filtered <- crime_scene_report %>%
+  filter(
+    date == "20180115",
+    city == "SQL City",
+    type == "murder"
+  )
+crime_long <- crime_filtered %>%
+  pivot_longer(
+    cols = c(date, city, type),  
+    names_to = "category",       
+    values_to = "details"       
+  )
 
 ```
 
@@ -441,7 +727,11 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: pe-1-one-call
-
+crime_scene_report |>
+         filter(date == ("20180115"),
+         city == ("SQL City"),
+         type == ("murder")
+         )
 ```
 
 -   using `across()`
@@ -565,14 +855,22 @@ The following assignments satisfy the above criteria:
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
+Going through the revision process my main goal was to better understand what i did wrong, and be able to demonstrate that i understood my mistakes. A lot of my feedback surrounded formatting issues, axis orientation, legend titles etc... The main thing i learned through the first half of the quarter is what resources can properly help me revise my thinking and what resources are simply stunting my growth in this class. I think my use of ChatGPT at the beginning of this class was an issue, but now after going through my previous work, and the lectures, i feel confident and able to progress in this class. Being able to do revisions and get feedback is something incredible in this class. Through revisions, i start by highlighting everything that i messed up or need growth on. I go back to my lecture notes and slides, as well as the readings and videos and the website to help me learn from the mistake and not just blindly correct it.
+
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
 ## Extending My Thinking
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
+In the first half of this class I was able to extend my thinking by learning how to combine different R skills together in more practical ways, analyzing data and creating meaningful graphs with the data. At first, I focused on just getting code to run, as that was my main priority and i wouldn't really look at my code in detail to see where i could make it more efficient. Yet over these past few weeks I started to think more about how each step connects, for example, using pipes to link data wrangling and visualization, or creating new variables to make plots more meaningful. I also learned to look for more efficient and readable solutions, like using functions and joins instead of repeating code. Overall, I moved from following examples to actually understanding why I was using certain tools, which helped me apply them confidently in my own analyses. I understand that my portfolio is less complete then others for where we are in class but i am confident that I will have a full successful portfolio by the end of our class. Since I had my concussion and had one Lab dismissed I have less work to show. Nonetheless these are just a few bumps in the road and i am ready to continue to extend my thinking in this class and demonstrate my understanding of the work we have done in class.
+
 ## Peer Support & Collaboration
 
 <!-- Include an image or a description of feedback you gave that you are proud of (either in a peer review or in Discord). -->
 
+For my Lab 4 code review i was able to really understand the code i was looking at and what was expected of us. I think being able peer review other students work has been extremely helpful in developing my own skills in the class. During this peer review i submitted my review of my peer and made sure to include largely positives as a way to encourage my peer but also i appreciated the effort they put in there work. Something i else focused on doing was not saying that any of there work was wrong but more so something my peer can improve on, and i think tats key into making a supportive and but also constructive peer review that helps build growth in my peers but also my assessment of others work.
+
 <!-- Include a description of how you grew as a collaborator through the weekly pair programming activities.   -->
+
+I think I grew as a collaborator during our practice activities in many different ways. The way the practice activities are formatted are super helpful in terms of both participants being able to share there ideas. I sometimes struggle with sharing my ideas in group or partner settings in fear or saying the wrong the thing, but i feel the way our practice activities are formatted make me more comfortable sharing ideas even if there wrong and having my partner help me by asking leading questions to my thinking. The same works vice versa, i am also able to develop my thinking by problem solving and only asking aiding questions to my partner whilst they try and find a solution to the issue at hand. This helps me become a better and more equal peer collaborator, as we are able to have both of our ideas shared and communicated, whilst still feeling heard.
