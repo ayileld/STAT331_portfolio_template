@@ -10,7 +10,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an C-.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -22,8 +22,8 @@ execute:
 
 ```{r}
 #| label: wd-1-csv-1
-mydata <- read.csv("surveys.csv")
-surveys <- read.csv("surveys.csv")
+# Lab 2
+surveys <- read.csv("~/Documents/YM STAT 331/Week 2/Lab 2/surveys.csv")
 
 ```
 
@@ -31,14 +31,26 @@ surveys <- read.csv("surveys.csv")
 
 ```{r}
 #| label: wd-1-csv-2
+# Lab 3
+cat("Loading teacher_evals.csv from YM STAT 331 / Week 3 / Lab 3\n")
 data <- read_csv(here("teacher_evals.csv"))
 
 ```
 
--   `xlsx` (**SKIP RN)**
+-   `xlsx` (
 
 ```{r}
 #| label: wd-1-xlsx
+# Practice activity 4 
+library(tidyverse)
+library(readxl)
+military <- read_xlsx("gov_spending_per_capita.xlsx",
+                      sheet = "Share of Govt. spending",
+                      skip  = 7,
+                      n_max = 190,
+                      na = c('xxx', '..', '. .')
+                      )
+
 
 ```
 
@@ -48,14 +60,11 @@ data <- read_csv(here("teacher_evals.csv"))
 
 ```{r}
 #| label: wd-2-ex-1
-# I edited my code from Lab 2 to be able to fit this criteria. 
-surveys_subset <- surveys |>
-  select(species, weight)
+# Work from my Lab 7, i I selected only the columns directly related to fish size to create a cleaner, and more focused dataset. This change was beneficial to my code because it removes unrelated variables and makes clear summaries or visualizations easier to interpret . I was able to make these edits with a peer tutor. 
+fish_size <- fish |>
+  select(species, length, weight)
 
-ggplot(data = surveys_subset,
-       mapping = aes(y = species, x = weight)) +
-  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +
-  geom_boxplot(outlier.shape = NA)
+fish_size |> head()
 ```
 
 -   Example removing specified columns
@@ -72,6 +81,14 @@ interview_full <- full_join(interview, get_fit_now_member, by = "person_id") |>
 
 ```{r}
 #| label: wd-2-ex-3
+# Work from Lab 4
+childcare_long <- ca_childcare |>
+  select(region, study_year, mfcc_infant, mfcc_toddler, mfcc_preschool) |>
+  pivot_longer(
+    cols = starts_with("mfcc_"),
+    names_to = "care_type",
+    values_to = "median_price"
+  )
 
 ```
 
@@ -81,8 +98,9 @@ interview_full <- full_join(interview, get_fit_now_member, by = "person_id") |>
 
 ```{r}
 #| label: wd-3-numeric-ex-1
-interview_full |>
-  filter(license_id == 118009)
+# Work from Lab 3
+surveys |>
+  filter(weight > 50)
 
 ```
 
@@ -90,9 +108,9 @@ interview_full |>
 
 ```{r}
 #| label: wd-3-numeric-ex-1
-witness1 <- person |>
-  filter(str_detect(address_street_name, "Northwestern Dr")) |>
-  filter(address_number == max(address_number))
+# Work from Lab 4
+childcare_costs |>
+  filter(mfcc_infant > 300)
 
 ```
 
@@ -138,19 +156,9 @@ crime_scene_report |>
 
 ```{r}
 #| label: wd-4-numeric-ex-1
-# I took my work from Challenge 2, and created a new variable a new numeric variable. 
-surveys <- surveys %>%
+# Edited version of my example from Challenge 2
+surveys <- surveys |>
   mutate(weight_kg = weight / 1000)
-ggplot(data = surveys,
-       mapping = aes(x = weight, y = species, color = sex)) +
-  geom_jitter(height = 0.25, alpha = 0.125) +
-  geom_boxplot(outlier.shape = NA) +
-  labs(
-    x = "Weight",
-    y = "Species",
-    title = "Rodent weight by species and sex"
-  ) +
-  scale_color_manual(values = c("F" = "#ff00f4", "M" = "#2261d8"))
 
 ```
 
@@ -158,11 +166,11 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: wd-4-numeric-ex-2
-# I took code from my Challenge 4, alltered my summary table to instead create new numeric variables within the data set. 
-childcare_costs <- childcare_costs %>%
+# From Challenge 4
+childcare_costs <- childcare_costs |>
   mutate(
     center_average = (mfcc_infant + mfcc_toddler + mfcc_preschool) / 3,
-    home_average = (mc_infant + mc_toddler + mc_preschool) / 3
+    home_average   = (mc_infant + mc_toddler + mc_preschool) / 3
   )
 
 ```
@@ -171,6 +179,16 @@ childcare_costs <- childcare_costs %>%
 
 ```{r}
 #| label: wd-4-factor-ex-1
+# From Lab 4: renaming care_type levels with recode()
+childcare_long <- childcare_long |>
+  mutate(
+    care_type = recode(
+      care_type,
+      "mfcc_infant"    = "Infant",
+      "mfcc_toddler"   = "Toddler",
+      "mfcc_preschool" = "Preschool"
+    )
+  )
 
 ```
 
@@ -178,21 +196,20 @@ childcare_costs <- childcare_costs %>%
 
 ```{r}
 #| label: wd-4-factor-ex-2
-
+# From Lab 4: reordering care_type factor levels
+childcare_long <- childcare_long |>
+  mutate(
+    care_type = fct_relevel(care_type, "Infant", "Toddler", "Preschool")
+  )
 ```
 
 -   Character (example must use functions from **stringr**)
 
 ```{r}
 #| label: wd-4-string
-# I took code from my Lab 5, using stringr functions i altered my persons dataset to make all the names uppercase. 
-person <- person %>%
-  mutate(
-    name = str_to_upper(name)
-  )
-witness1 <- person |>
-  filter(str_detect(address_street_name, "Northwestern Dr")) |>
-  filter(address_number == max(address_number))
+# From Lab 5, using stringr to modify a character variable
+person <- person |>
+  mutate(name = str_to_upper(name))
 ```
 
 -   Date (example must use functions from **lubridate**)
@@ -219,10 +236,17 @@ crime_scene_report %>%
 ```{r}
 #| label: wd-5-left-ex-1
 # I took my code from Lab 5, altered it slightly to include a left join. 
-interview_full <- interview %>%
-  left_join(get_fit_now_member, by = "person_id") %>%
-  left_join(person, by = c("person_id" = "id"))
-interview_full %>%
+interview_full <- interview |>
+  left_join(
+    y = get_fit_now_member,
+    by = "person_id"
+  ) |>
+  left_join(
+    y = person,
+    by = c("person_id" = "id")
+  )
+
+interview_full |>
   filter(license_id == 118009)
 
 ```
@@ -231,15 +255,36 @@ interview_full %>%
 
 ```{r}
 #| label: wd-5-right
-# This is additional code to my summaries table in my Challenge 4. 
-counties_with_costs <- state_summary %>%
-  right_join(counties, by = "state_abbreviation")
+# From Lab 4 (modified)
+# I modified my Lab 4 code to use right_join() so that all California counties are kept, even if some are missing childcare cost data.
+
+ca_childcare_right <- childcare_costs |>
+  right_join(
+    y  = counties |> filter(state_abbreviation == "CA"),
+    by = "county_fips_code"
+  )
+
+ca_childcare_right
 ```
 
 -   `left_join()` **or** `right_join()` Example 2
 
 ```{r}
 #| label: wd-5-left-right-ex-2
+# From Lab 7, missing-value counts edited using a left join is beneficial to my code 
+missing_counts_tbl <- fish |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "variable", value = "n_missing")
+
+var_names_tbl <- tibble(variable = names(fish))
+
+fish_missing_joined <- var_names_tbl |>
+  left_join(
+    y  = missing_counts_tbl,
+    by = "variable"
+  )
+
+fish_missing_joined
 
 ```
 
@@ -247,6 +292,21 @@ counties_with_costs <- state_summary %>%
 
 ```{r}
 #| label: wd-5-inner-ex-1
+# From Lab 2, i added this to the joining species-level part as it enhances this piece of code 
+species_means <- surveys |>
+  group_by(species) |>
+  summarise(
+    mean_weight = mean(weight, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+surveys_with_means <- surveys |>
+  inner_join(
+    y  = species_means,
+    by = "species"
+  )
+
+surveys_with_means
 
 ```
 
@@ -254,6 +314,22 @@ counties_with_costs <- state_summary %>%
 
 ```{r}
 #| label: wd-5-inner-ex-2
+# From Lab 8, joining island-level flipper length 
+
+island_summary <- penguins |>
+  group_by(island) |>
+  summarise(
+    mean_flipper = mean(flipper_length_mm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+penguins_with_summary <- penguins |>
+  inner_join(
+    y  = island_summary,
+    by = "island"
+  )
+
+penguins_with_summary
 
 ```
 
@@ -263,6 +339,9 @@ counties_with_costs <- state_summary %>%
 
 ```{r}
 #| label: wd-6-semi
+# From Lab 5, people who are gym members
+gym_people <- person |>
+  semi_join(get_fit_now_member, by = c("id" = "person_id"))
 
 ```
 
@@ -270,7 +349,22 @@ counties_with_costs <- state_summary %>%
 
 ```{r}
 #| label: wd-6-anti
+# Edited my Lab 9, added an anti-join wich is beneficial to my code.
+all_combos <- expand_grid(
+  sex             = unique(df$sex),
+  academic_degree = unique(df$academic_degree)
+)
 
+present_combos <- df |>
+  distinct(sex, academic_degree)
+
+missing_combos <- all_combos |>
+  anti_join(
+    y  = present_combos,
+    by = c("sex", "academic_degree")
+  )
+
+missing_combos
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
@@ -279,18 +373,21 @@ counties_with_costs <- state_summary %>%
 
 ```{r}
 #| label: wd-7-long
-# Using code from my lab 5, i used a pivot longer function to make my dataframe go from wide to long.
-crime_filtered <- crime_scene_report %>%
-  filter(
-    date == "20180115",
-    city == "SQL City",
-    type == "murder"
-  )
-crime_long <- crime_filtered %>%
+# From Lab 4, pivoting childcare costs from wide to long
+recreate_plot <- ca_childcare |>
+  select(region, study_year, mfcc_infant, mfcc_toddler, mfcc_preschool) |>
   pivot_longer(
-    cols = c(date, city, type),  
-    names_to = "category",       
-    values_to = "details"       
+    cols = starts_with("mfcc_"),
+    names_to = "care_type",
+    values_to = "median_price"
+  ) |>
+  mutate(
+    care_type = recode(
+      care_type,
+      "mfcc_infant"    = "Infant",
+      "mfcc_toddler"   = "Toddler",
+      "mfcc_preschool" = "Preschool"
+    )
   )
 ```
 
@@ -298,6 +395,30 @@ crime_long <- crime_filtered %>%
 
 ```{r}
 #| label: wd-7-wide
+# Original code from Lab  using a pivot wider function. 
+pivot_table <- function(df, row, col) {
+  df |>
+    count({{ row }}, {{ col }}) |>
+    pivot_wider(
+      names_from = {{ col }},
+      values_from = n,
+      values_fill = 0
+    ) |>
+    adorn_totals(where = c("row", "col"))
+}
+
+#Edited different code with same code also using a pivot longer function. 
+penguin_counts <- penguins |>
+  count(species, island)
+
+penguin_table <- penguin_counts |>
+  pivot_wider(
+    names_from  = island,
+    values_from = n,
+    values_fill = 0
+  )
+
+penguin_table
 
 ```
 
@@ -337,36 +458,39 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: r-2-2
-# Work from my Challenge 4. 
-center_data <- childcare_costs %>%
-  select(mfcc_infant, mfcc_toddler, mfcc_preschool) %>%
-  unlist(use.names = FALSE)
+# Work from my Lab 9 
+demo_tbl <- df |>
+  select(academic_degree, seniority, sex) |>
+  mutate(
+    academic_degree = as.character(academic_degree),
+    seniority       = as.character(seniority),
+    sex = recode(
+      as.character(sex),
+      "M" = "Male", "m" = "Male",
+      "F" = "Female", "f" = "Female",
+      .default = as.character(sex)
+    )
+  ) |>
+  pivot_longer(
+    cols      = everything(),
+    names_to  = "Demographic",
+    values_to = "Level"
+  ) |>
+  mutate(
+    Demographic = recode(
+      Demographic,
+      "academic_degree" = "Academic Degree",
+      "seniority"       = "Seniority",
+      "sex"             = "Sex"
+    )
+  ) |>
+  count(Demographic, Level, name = "Count") |>
+  group_by(Demographic) |>
+  mutate(Percent = Count / sum(Count)) |>
+  ungroup() |>
+  arrange(Demographic, desc(Count))
 
-home_data <- childcare_costs %>%
-  select(mc_infant, mc_toddler, mc_preschool) %>%
-  unlist(use.names = FALSE)
-
-plot_df <- tibble(
-  setting = c(rep("Center-based", length(center_data)),
-              rep("In-home",      length(home_data))),
-  cost = c(center_data, home_data)
-) %>%
-  filter(!is.na(cost)) %>%
-  mutate(setting = factor(setting, levels = c("In-home", "Center-based")))
-
-ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
-  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
-  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
-  labs(
-    title = "Childcare Prices by Setting in California",
-    x = "Setting",
-    y = "Weekly Cost of Childcare $"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    legend.position = "left",
-  )
+demo_tbl
 
 ```
 
@@ -398,6 +522,43 @@ sql_city_murder <- filter_crime(
 
 ```{r}
 #| label: r-3-example
+# I revised my Lab 10 simulation function to include input checks
+# and use stop() when the inputs are not valid.
+
+simulate_ci_once <- function(beta0, beta1, n) {
+  # Input checks to make the function more robust
+  if (!is.numeric(beta0) || length(beta0) != 1) {
+    stop("beta0 must be a single numeric value.")
+  }
+
+  if (!is.numeric(beta1) || length(beta1) != 1) {
+    stop("beta1 must be a single numeric value.")
+  }
+
+  if (!is.numeric(n) || length(n) != 1 || n <= 1) {
+    stop("n must be a single numeric value greater than 1.")
+  }
+
+  # Data generation (from Lab 10)
+  x  <- runif(n, 0, 1)
+  ep <- rnorm(n, mean = 0, sd = 1)
+  y  <- beta0 + beta1 * x + ep
+  dat <- tibble(x = x, y = y)
+
+  # Fit linear model and return slope estimate + CI
+  fit <- lm(y ~ x, data = dat)
+
+  tidy(fit, conf.int = TRUE) |>
+    filter(term == "x") |>
+    transmute(
+      estimate = estimate,
+      conf.low = conf.low,
+      conf.high = conf.high
+    )
+}
+
+# Example use:
+simulate_ci_once(beta0 = 3, beta1 = 0.5, n = 100)
 
 ```
 
@@ -405,7 +566,32 @@ sql_city_murder <- filter_crime(
 
 ```{r}
 #| label: r-3-function-stops
+# I revised my Lab 8 rescale_01() function to be more robust and resistant to changes using a peer tutor. It now checks inputs and uses stop() when the input is invalid.
 
+rescale_01_checked <- function(x) {
+
+  # Input must be numeric
+  if (!is.numeric(x)) {
+    stop("Input must be numeric.")
+  }
+
+  # Must contain at least two values
+  if (length(x) < 2) {
+    stop("Input must contain at least two numeric values.")
+  }
+
+  # Cannot be all missing values
+  if (all(is.na(x))) {
+    stop("Input cannot be all NA values.")
+  }
+
+  # Original Lab 8 logic
+  (x - min(x, na.rm = TRUE)) / 
+    (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}
+
+# Example use with penguins data (Lab 8)
+rescale_01_checked(penguins$bill_length_mm)
 ```
 
 ## Data Visualization & Summarization
@@ -416,36 +602,25 @@ sql_city_murder <- filter_crime(
 
 ```{r}
 #| label: dvs-1-num
-# Code from Challenge 4. 
-center_data <- childcare_costs %>%
-  select(mfcc_infant, mfcc_toddler, mfcc_preschool) %>%
-  unlist(use.names = FALSE)
-
-home_data <- childcare_costs %>%
-  select(mc_infant, mc_toddler, mc_preschool) %>%
-  unlist(use.names = FALSE)
-
-plot_df <- tibble(
-  setting = c(rep("Center-based", length(center_data)),
-              rep("In-home",      length(home_data))),
-  cost = c(center_data, home_data)
-) %>%
-  filter(!is.na(cost)) %>%
-  mutate(setting = factor(setting, levels = c("In-home", "Center-based")))
-
-ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
-  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
-  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
-  labs(
-    title = "Childcare Prices by Setting in California",
-    x = "Setting",
-    y = "Weekly Cost of Childcare $"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    legend.position = "left",
+# i revised my Lab 7 with a peer tutor 
+missing_summary <- fish |>
+  group_by(year) |>
+  summarise(
+    mean_weight   = mean(weight, na.rm = TRUE),
+    mean_length   = mean(length, na.rm = TRUE),
+    .groups = "drop"
   )
+
+# Step 2: Plot two numeric variables (mean_length vs. mean_weight)
+ggplot(missing_summary, aes(x = mean_length, y = mean_weight)) +
+  geom_point(alpha = 0.6) +
+  labs(
+    x = "Mean Length (mm)",
+    y = "Mean Weight (g)",
+    title = "Mean Fish Length vs Weight Across Years"
+  ) +
+  theme_minimal()
+
 
 ```
 
@@ -453,18 +628,19 @@ ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
 
 ```{r}
 #| label: dvs-2-num-cat
-# Code from Lab 2. 
-ggplot(data = surveys,
-       mapping = aes(y = species, x = weight)) +
-  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +   
-  geom_boxplot(outlier.shape = NA) +                      
+# Work from my Lab 2 edited with my peer tutor. 
+surveys_clean <- surveys |>
+  filter(!is.na(weight), !is.na(species))
+
+ggplot(surveys_clean, aes(x = weight, y = species)) +
+  geom_jitter(width = 0.3, alpha = 0.25, color = "green") +
+  geom_boxplot(outlier.shape = NA) +
   labs(
     y = "Species",
-    x = NULL,
-    title = "Rodent weight by species",
-    subtitle = "Weight (g)"
+    x = "Weight (g)",
+    title = "Rodent Weights by Species (Lab 2)"
   ) +
-  theme(axis.text.y = element_text(angle = 45))    
+  theme(axis.text.y = element_text(angle = 30, hjust = 1))   
 
 ```
 
@@ -472,13 +648,43 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-2-cat
+# I used my work from Lab 8, adjusted whats necessary and cleaned up my code 
+penguins_clean <- penguins |>
+  filter(!is.na(species), !is.na(sex))
 
+ggplot(penguins_clean, aes(x = species, fill = sex)) +
+  geom_bar() +
+  labs(
+    title = "Counts of Penguins by Species and Sex",
+    x = "Species",
+    y = "Count",
+    fill = "Sex"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
 ```
 
 -   Dates (time series plot)
 
 ```{r}
 #| label: dvs-2-date
+# Used my Lab 4 and adjusted it with my peer tutor. 
+year_price <- ca_childcare |>
+  group_by(study_year) |>
+  summarise(
+    median_infant_price = median(mfcc_infant, na.rm = TRUE),
+    .groups = "drop"
+  )
+ggplot(year_price, aes(x = study_year, y = median_infant_price)) +
+  geom_line(color = "#0072B2") +
+  labs(
+    x = "Year",
+    y = "Median Infant Price ($)",
+    title = "Median Infant Childcare Price Over Time (CA)",
+    subtitle = "Using Lab 4 childcare cost data"
+  ) +
+  scale_y_continuous(labels = scales::label_dollar()) +   # modern syntax
+  theme_minimal()
 
 ```
 
@@ -488,18 +694,24 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-2-ex-1
-# My code from Lab 2. 
-ggplot(data = surveys,
-       mapping = aes(y = species, x = weight)) +
-  geom_jitter(width = 0.3, color = "green", alpha = 0.25) +   
-  geom_boxplot(outlier.shape = NA) +                         
+# From Lab 4, adjusted with peer tutor. 
+
+ggplot(ca_childcare, aes(x = mhi_2018, y = mfcc_infant, color = region)) +
+  geom_point(alpha = 0.5, size = 0.7) +
   labs(
-    y = "Species",
-    x = NULL,
-    title = "Rodent weight by species",
-    subtitle = "Weight (g)"
+    title = "Infant Childcare Price vs. Household Income in California",
+    x = "Median Household Income (2018 dollars)",
+    y = "Weekly Price for Center-Based Infant Care",
+    color = "Region"
   ) +
-  theme(axis.text.y = element_text(angle = 45)) 
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "right",
+    legend.title = element_text(size = 9),
+    legend.text  = element_text(size = 7),
+    axis.text.x  = element_text(angle = 20, hjust = 1),
+    axis.text.y  = element_text(size = 8)
+  )
 
 ```
 
@@ -507,17 +719,30 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-2-ex-2
-# Im using code from my Challenge 2 and i adjusted the colors to be more accesible. 
-gplot(surveys, aes(x = weight, y = species, color = sex)) +
+# From Challenge 2,i am using a colorblind-friendly palette. I chose a blue and orange palette (#0072B2 and #E69F00) because these colors have good contrast and are commonly recommended as colorblind-friendly. This makes it easier for all viewers, including those with color vision deficiencies, to distinguish between male and female rodents.
+
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species, color = sex)) +
   geom_jitter(height = 0.25, alpha = 0.125) +
   geom_boxplot(outlier.shape = NA) +
   labs(
-    x = "Weight",
+    x = "Weight (g)",
     y = "Species",
-    title = "Rodent weight by species and sex"
+    title = "Rodent Weight by Species and Sex",
+    subtitle = "Using colorblind-friendly blue/orange palette for sex"
   ) +
-  scale_color_manual(values = c("F" = "#0072B2",   
-                                "M" = "#E69F00"))
+  scale_color_manual(
+    values = c(
+      "F" = "#0072B2",  # blue
+      "M" = "#E69F00"   # orange
+    ),
+    name = "Sex",
+    labels = c("F" = "Female", "M" = "Male")
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(angle = 20, hjust = 1)
+  )
 ```
 
 -   I can modify my plot titles to clearly communicate the data context
@@ -545,24 +770,55 @@ ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
 
 ```{r}
 #| label: dvs-2-ex-4
+# From Lab 10, i adjusted my text size and labels for readability with my tutor.
 
+ggplot(tab_df, aes(x = n_correct, y = proportion)) +
+  geom_col(fill = "#D81B60") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  labs(
+    x = "Number of Babies Returned Correctly",
+    y = "Proportion of Simulations",
+    title = "Random Babies Simulation Results",
+    subtitle = "Proportion of 10,000 simulations with 0–4 correctly matched babies"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x  = element_text(size = 9),
+    axis.text.y  = element_text(size = 9),
+    plot.title   = element_text(size = 14, face = "bold"),
+    plot.subtitle= element_text(size = 10)
+  )
 ```
 
 -   I can reorder my legend to align with the colors in my plot
 
 ```{r}
 #| label: dvs-2-ex-5
-ggplot(plot_df, aes(x = setting, y = cost, fill = setting)) +
-  geom_boxplot(alpha = 0.5, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = median, geom = "point", size = 2, color = "white") +
-  scale_y_continuous(labels = scales::dollar_format(accuracy = 1)) +
-  labs(
-    title = "Childcare Prices by Setting in California",
-    x = "Setting",
-    y = "Weekly Cost of Childcare $"
+# I used my work from Lab 8, in wich i reordered the legend to match my fill colors, i did this with the help of my tutor but i understand how this betters my code. 
+
+penguins_clean <- penguins |>
+  filter(!is.na(species), !is.na(sex)) |>
+  mutate(
+    sex = factor(sex, levels = c("female", "male"))
+  )
+
+ggplot(penguins_clean, aes(x = species, fill = sex)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(
+    values = c("female" = "#0072B2",  # blue for female
+               "male"   = "#E69F00"), # orange for male
+    name   = "Sex",
+    labels = c("Female", "Male")
   ) +
-  theme_minimal(base_size = 12) +
-  theme(legend.position = "left")
+  labs(
+    title = "Number of Penguins by Species and Sex",
+    x = "Species",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 20, hjust = 1)
+  )
 
 ```
 
@@ -588,17 +844,34 @@ gplot(surveys, aes(x = weight, y = species, color = sex)) +
 
 ```{r}
 #| label: dvs-3-1-ex-2
-ggplot(data = surveys,
-       mapping = aes(y = species, x = weight)) +
-  geom_jitter(width = 0.3, color = "#008467", alpha = 0.25) +   
-  geom_boxplot(outlier.shape = NA) +                         
-  labs(
-    y = "Species",
-    x = NULL,
-    title = "Rodent weight by species",
-    subtitle = "Weight (g)"
+# This is from my From Lab 10, i edited my colors and cleaned up my work with my peer tutor. I used a set of non default hex colors with strong contrast so each bar is easy to distinguish, including for people with some color vision differences. I did this instead of using a color package. 
+
+tab_df_colored <- tab_df |>
+  mutate(n_correct = factor(n_correct))
+
+ggplot(tab_df_colored, aes(x = n_correct, y = proportion, fill = n_correct)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  scale_fill_manual(
+    values = c(
+      "0" = "#D81B60",  
+      "1" = "#1E88E5",  
+      "2" = "#FFC107",  
+      "3" = "#004D40",  
+      "4" = "#7B1FA2"   
+    ),
+    name = "Correct Babies"
   ) +
-  theme(axis.text.y = element_text(angle = 45)) 
+  labs(
+    x = "Number of Babies Returned Correctly",
+    y = "Proportion of Simulations",
+    title = "Random Babies Simulation with Custom Colors"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(size = 9),
+    axis.text.y = element_text(size = 9)
+  )
 
 
 ```
@@ -607,6 +880,34 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-3-2
+# Work from my Lab 4 edited to add annotations to highlight the year with the highest infant price, worked on this with tutor. 
+
+year_price <- ca_childcare |>
+  group_by(study_year) |>
+  summarise(
+    median_infant_price = median(mfcc_infant, na.rm = TRUE),
+    .groups = "drop"
+  )
+max_year <- year_price |>
+  slice_max(median_infant_price, n = 1)
+
+ggplot(year_price, aes(x = study_year, y = median_infant_price)) +
+  geom_line(color = "#0072B2") +
+  geom_point(color = "#0072B2") +
+  geom_point(data = max_year, color = "#D81B60", size = 2) +
+  geom_text(
+    data = max_year,
+    aes(label = paste0("Highest: $", round(median_infant_price, 0))),
+    vjust = -1,
+    size = 3.2
+  ) +
+  labs(
+    x = "Year",
+    y = "Median Infant Price ($)",
+    title = "Median Infant Childcare Price Over Time in California",
+    subtitle = "Annotated with the year of the highest median infant price"
+  ) +
+  theme_minimal(base_size = 11)
 
 ```
 
@@ -614,6 +915,33 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-3-3
+# From Lab 7 apply geom_segment() as a creative geometry, with the help of my peer tutor. I used geom_segment() to show the range of fish lengths for each year in the Lab 7 data, which i believe is a more creative way to visualize the spread than just plotting points or a single summary.
+
+
+fish_length_range <- fish |>
+  group_by(year) |>
+  summarise(
+    min_length = min(length, na.rm = TRUE),
+    max_length = max(length, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  filter(!is.na(min_length), !is.na(max_length))
+
+ggplot(fish_length_range, aes(x = year)) +
+  geom_segment(
+    aes(
+      xend = year,
+      y    = min_length,
+      yend = max_length
+    ),
+    linewidth = 1
+  ) +
+  labs(
+    title = "Range of Fish Lengths by Year",
+    x     = "Year",
+    y     = "Fish Length (mm)"
+  ) +
+  theme_minimal(base_size = 11)
 
 ```
 
@@ -637,6 +965,21 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-4-across
+# I edited my Lab 7 to use across() to find the mean and standard deviation for every numeric column in the fish dataset in one step, instead of writing separate summarise() calls, with my peer tutor. 
+
+fish_summary <- fish |>
+  summarise(
+    across(
+      .cols = where(is.numeric),
+      .fns  = list(
+        mean = ~ mean(.x, na.rm = TRUE),
+        sd   = ~ sd(.x,   na.rm = TRUE)
+      ),
+      .names = "{.col}_{.fn}"
+    )
+  )
+
+fish_summary
 
 ```
 
@@ -646,6 +989,17 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-5-1
+# From my Lab 4 I originally filtered to 2018 and then used slice_min() to find only the single region with the lowest median infant price. For this portfolio example, I removed slice_min() so that all regions are included, which provides a complete summary across groups and better demonstrates how median childcare costs vary by region, i worked on this with my peer tutor. 
+
+region_infant_costs_2018 <- ca_childcare |>
+  filter(study_year == 2018) |>
+  group_by(region) |>
+  summarise(
+    median_infant_price = median(mfcc_infant, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+region_infant_costs_2018
 
 ```
 
@@ -653,6 +1007,39 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-5-2
+# From Lab 9, the pipeline was originally used to create a formatted demographic table, but for this example I kept only the grouped counts and percentages before the table styling. This change highlights the actual summaries across demographic groups,this clearly demonstrates how each category contributes to the overall distribution.
+
+demo_summary <- df |>
+  select(academic_degree, seniority, sex) |>
+  mutate(
+    academic_degree = as.character(academic_degree),
+    seniority       = as.character(seniority),
+    sex = recode(
+      as.character(sex),
+      "M" = "Male", "m" = "Male",
+      "F" = "Female", "f" = "Female",
+      .default = as.character(sex)
+    )
+  ) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "Demographic",
+    values_to = "Level"
+  ) |>
+  mutate(
+    Demographic = recode(
+      Demographic,
+      "academic_degree" = "Academic Degree",
+      "seniority"       = "Seniority",
+      "sex"             = "Sex"
+    )
+  ) |>
+  count(Demographic, Level, name = "Count") |>
+  group_by(Demographic) |>
+  mutate(Percent = Count / sum(Count)) |>
+  ungroup()
+
+demo_summary
 
 ```
 
@@ -662,6 +1049,20 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-6-ex-1
+# Work from my Lab 4, i had previously created my_table, but here I wrapped it in gt() and relabeled the columns with more descriptive names. This makes the table easier for the reader to interpret without guessing what each year column represents, additionally i worked on these edits with my tutor. 
+income_table <- my_table |>
+  gt() |>
+  cols_label(
+    region = "California Region",
+    `2008` = "Median Income 2008 (2018 dollars)",
+    `2018` = "Median Income 2018 (2018 dollars)"
+  ) |>
+  tab_header(
+    title = "Median Household Income by Region and Year"
+  ) |>
+  fmt_number(columns = c(`2008`, `2018`), decimals = 0)
+
+income_table
 
 ```
 
@@ -669,6 +1070,17 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-6-ex-2
+# Work from my Lab 9, i added a clearer set of column names and bolded the header row using row_spec(0, bold = TRUE). This formatting change makes the table easier to review and keeps the layout focused on the data. I was able to make these edits with the help of my peer tutor. 
+
+demo_table <- demo_tbl |>
+  kable(
+    caption   = "Demographics of Instructors",
+    col.names = c("Demographic", "Level", "Count", "Percent")
+  ) |>
+  kable_styling(full_width = FALSE) |>
+  row_spec(0, bold = TRUE)
+
+demo_table
 
 ```
 
@@ -676,6 +1088,17 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-6-ex-3
+# Work from my Lab 2,  here I turned the data into a clean summary table by counting observations across species and arranging them from most to least common. Ordering the species by frequency makes the table much easier to interpret because the reader can immediately see which species dominate the dataset. I was able to make these changes with the help of my peer tutor. 
+species_counts <- surveys |>
+  filter(!is.na(species)) |>
+  count(species, name = "Count") |>
+  arrange(desc(Count))
+
+species_counts |>
+  kable(
+    caption   = "Number of Observations per Species (Lab 2 Surveys Data)",
+    col.names = c("Species", "Number of Observations")
+  )
 
 ```
 
@@ -685,17 +1108,27 @@ view(summary_table)
 
 ```{r}
 #| label: dvs-7-ex-1
-ggplot(data = surveys,
-       mapping = aes(y = species, x = weight)) +
-  geom_jitter(width = 0.3, color = "#008467", alpha = 0.25) +   
-  geom_boxplot(outlier.shape = NA) +                         
-  labs(
-    y = "Species",
-    x = NULL,
-    title = "Rodent weight by species",
-    subtitle = "Weight (g)"
-  ) +
-  theme(axis.text.y = element_text(angle = 45)) 
+# Work from my Lab 9, i added a clearer caption and full_width = FALSE for nicer layout. The non-default colors are beneficial in this code because they draw attention to which variables have missing data problems, wich makes my table more informative and easier to scan. I made these edits with the help of a peer tutor. 
+
+missing_counts_tbl <- fish |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "Variable", value = "N_Missing") |>
+  arrange(desc(N_Missing), Variable)
+
+missing_counts_tbl |>
+  mutate(
+    `# Missing` = if_else(
+      N_Missing == 0,
+      cell_spec(N_Missing, format = "html", background = "lightgreen"),
+      cell_spec(N_Missing, format = "html", background = "tomato")
+    )
+  ) |>
+  select(Variable, `# Missing`) |>
+  kable(
+    caption   = "Missing Values by Variable in the Fish Dataset",
+    col.names = c("Variable", "# Missing")
+  ) |>
+  kable_styling(full_width = FALSE)
 
 
 ```
@@ -704,17 +1137,29 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-7-ex-2
-crime_filtered <- crime_scene_report %>%
-  filter(
-    date == "20180115",
-    city == "SQL City",
-    type == "murder"
+# Work from my Lab 7, I added a final kable() call with clearer column names so the long layout created by pivot_longer() becomes a readable summary table. Using pivot_longer() in this Lab is beneficial here because it converts a wide summary into a tidy list where each variable and its missing count are in their own row, which makes the table much easier to interpret. I was able to make these edits with the help of a peer tutor. 
+
+missing_values <- fish |>
+  summarise(
+    missing_observations = sum(if_any(everything(), is.na)),
+    total_observations   = n(),
+    across(everything(), ~ sum(is.na(.)), .names = "{.col}_n_missing")
   )
-crime_long <- crime_filtered %>%
+
+missing_tbl <- missing_values |>
   pivot_longer(
-    cols = c(date, city, type),  
-    names_to = "category",       
-    values_to = "details"       
+    cols = ends_with("_n_missing"),
+    names_to = "Variable",
+    names_pattern = "^(.*)_n_missing$",
+    values_to = "N_Missing"
+  ) |>
+  filter(N_Missing > 0) |>
+  arrange(desc(N_Missing))
+
+missing_tbl |>
+  kable(
+    caption   = "Number of Missing Values for Each Fish Variable (Lab 7)",
+    col.names = c("Variable", "# Missing")
   )
 
 ```
@@ -727,6 +1172,7 @@ crime_long <- crime_filtered %>%
 
 ```{r}
 #| label: pe-1-one-call
+# Work from my Lab 5
 crime_scene_report |>
          filter(date == ("20180115"),
          city == ("SQL City"),
@@ -738,6 +1184,20 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-1-across
+# Work from my Lab 7, I formatted the across() function slightly differently to make the .cols, .fns, and .names arguments clearer. Using across() in this Lab is beneficial because it allows me to compute the number of missing values for all columns in one step, instead of writing separate summarise() lines for each variable, which demonstrates concise, non-repetitive code. I was able to make these changes with the help of a peer tutor. 
+
+missing_values <- fish |>
+  summarise(
+    missing_observations = sum(if_any(everything(), is.na)),
+    total_observations   = n(),
+    across(
+      .cols = everything(),
+      .fns  = ~ sum(is.na(.x)),
+      .names = "{.col}_n_missing"
+    )
+  )
+
+missing_values
 
 ```
 
@@ -745,6 +1205,17 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-1-map-1
+# Work from my Lab 10, i added results[1:10] at the end so my chunk prints something small instead of the whole vector. Using map_int() is beneficial in my Lab 10 because it automatically repeats the simulation without me writting unnecessary lines of code, demonstrating how the map family reduces repetition and makes my program more efficient.
+randomBabies <- function(n_babies) {
+  reassigned <- sample(1:n_babies)
+  correct    <- sum(reassigned == 1:n_babies)
+  correct == n_babies   
+}
+
+set.seed(123)
+results <- map_int(1:10000, ~ randomBabies(4))
+
+results[1:10]
 
 ```
 
@@ -754,6 +1225,14 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-2-1
+#Work from Lab 8, I added a call to rescale_01(penguins$bill_length_mm) so the chunk shows how it operates directly on a vector. This function is beneficial because it lets me rescale any numeric vector to the 0–1 range with one line, instead of rewriting the min max formula every time. I was able to make these edits with a peer editor. 
+
+rescale_01 <- function(x) {
+  (x - min(x, na.rm = TRUE)) /
+    (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}
+
+rescale_01(penguins$bill_length_mm)
 
 ```
 
@@ -761,14 +1240,40 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-2-2
+# Work from my Lab 8, I added the penguins_rescaled <- to demonstrate how it rescales multiple columns in a data frame using a single function call. This is beneficial because i am able to avoid repeating mutate() code for each column—rescale_column() plus across() handles all selected variables at once, this directly reduces repetition. I was able to make these edits with the help of a peer tutor. 
+rescale_column <- function(df, cols) {
+  df |>
+    mutate(across({{ cols }}, rescale_01))
+}
 
+penguins_rescaled <- rescale_column(
+  penguins,
+  cols = c(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+)
+
+penguins_rescaled
 ```
 
 -   Example 3: Function that operates on vectors *or* data frames
 
 ```{r}
 #| label: pe-2-3
+# Work from my Lab 8, I added  pivot_table(penguins, row = species, col = island) to demonstrate how it can quickly produce a wide count table with row and column totals. This is beneficial to my code and final outcome function because it replaces writing separate count(), pivot_wider(), and total-calculation code every time you want a summary table. I was able to make these edits with the help of a peer tutor. 
 
+pivot_table <- function(df, row, col) {
+  df |>
+    count({{ row }}, {{ col }}) |>
+    pivot_wider(
+      names_from  = {{ col }},
+      values_from = n,
+      values_fill = 0
+    ) |>
+    janitor::adorn_totals(where = c("row", "col"))
+}
+
+penguin_table <- pivot_table(penguins, row = species, col = island)
+
+penguin_table
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
@@ -777,6 +1282,20 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-3-across
+# Work from my Lab 7, I spaced out the across() arguments to make it easier to see that it loops over every column once. Using the across() function here is beneficial because it applies sum(is.na()) to all variables and demonstrates iteration across columns . I was able to make these edits with the help of a peer tutor. 
+
+missing_values <- fish |>
+  summarise(
+    missing_observations = sum(if_any(everything(), is.na)),
+    total_observations   = n(),
+    across(
+      .cols  = everything(),
+      .fns   = ~ sum(is.na(.x)),
+      .names = "{.col}_n_missing"
+    )
+  )
+
+missing_values
 
 ```
 
@@ -784,13 +1303,55 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-3-map-1
+# Work from my Lab 10,i used map_dfr() to automatically run the simulation 1000 times and stack the results into a single data frame, instead of manually calling mycifun() over and over, which demonstrates iteration with one input. I was able to make these edits with the help of a peer tutor. 
 
+mycifun <- function(beta0, beta1, n) {
+  x  <- runif(n, 0, 1)
+  ep <- rnorm(n, mean = 0, sd = 1)
+  y  <- beta0 + beta1 * x + ep
+  dat <- tibble(x = x, y = y)
+
+  fit <- lm(y ~ x, data = dat)
+
+  tidy(fit, conf.int = TRUE) |>
+    filter(term == "x") |>
+    transmute(
+      estimate = estimate,
+      conf.low = conf.low,
+      conf.high = conf.high,
+      cover = as.integer(beta1 >= conf.low & beta1 <= conf.high)
+    )
+}
+
+set.seed(1000)
+
+ci_dat <- map_dfr(
+  .x = 1:1000,
+  .f = ~ mycifun(beta0 = 3, beta1 = 0.5, n = 100)
+)
 ```
 
 -   using a `map()` function with **more than one** input (e.g., `map_2()` or `pmap()`)
 
 ```{r}
 #| label: pe-3-map-2
+#This is etended work from my Lab 10, i added  param_grid tibble plus pmap_dfr() so that the function is run across several combinations of beta1 and n instead of a single setting. This is beneficial because it shows how to iterate over multiple changing inputs in a concise way. I was able to make these edits with the help of a peer tutor. 
+
+param_grid <- tibble(
+  beta0 = 3,
+  beta1 = c(0.3, 0.5, 0.8),
+  n     = c(50, 100, 200)
+)
+
+set.seed(2025)
+
+ci_grid <- param_grid |>
+  pmap_dfr(
+    .f = ~ mycifun(beta0 = ..1, beta1 = ..2, n = ..3),
+    .id = "combo_id"
+  )
+
+ci_grid
 
 ```
 
@@ -800,6 +1361,26 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-4-1
+# Work from my Lab 7, I renamed var to variable. I used pivot_longer() since it is beneficial because it’s the "modern" replacement for older, superseded functions like gather(), and it lets me reshape many “*_n_missing” columns into a tidy, readable table. I was able to make these edits with the help of a peer tutor. 
+
+missing_values <- fish |>
+  summarise(
+    missing_observations = sum(if_any(everything(), is.na)),
+    total_observations   = n(),
+    across(everything(), ~ sum(is.na(.)), .names = "{.col}_n_missing")
+  )
+
+missing_tbl <- missing_values |>
+  pivot_longer(
+    cols         = ends_with("_n_missing"),
+    names_to     = "variable",
+    names_pattern = "^(.*)_n_missing$",
+    values_to    = "n_missing"
+  ) |>
+  filter(n_missing > 0) |>
+  arrange(desc(n_missing))
+
+missing_tbl
 
 ```
 
@@ -807,6 +1388,35 @@ crime_scene_report |>
 
 ```{r}
 #| label: pe-4-2
+#  Work from my Lab 4, I connected the select(), pivot_longer(), and mutate() steps directly into ggplot() using one pipeline. I felt this change is beneficial to my code because it keeps all the data-wrangling and plotting steps together in a single,accurate tidyverse pipeline, which makes the code easier to follow and reduces clutter from temporary objects. I was able to make these edits with the help of my peer tutor. 
+
+ca_childcare |>
+  select(region, study_year, mfcc_infant, mfcc_toddler, mfcc_preschool) |>
+  pivot_longer(
+    cols      = starts_with("mfcc_"),
+    names_to  = "care_type",
+    values_to = "median_price"
+  ) |>
+  mutate(
+    care_type = recode(
+      care_type,
+      "mfcc_infant"    = "Infant",
+      "mfcc_toddler"   = "Toddler",
+      "mfcc_preschool" = "Preschool"
+    ),
+    care_type = fct_relevel(care_type, "Infant", "Toddler", "Preschool")
+  ) |>
+  ggplot(aes(x = study_year, y = median_price, color = care_type)) +
+  geom_point(alpha = 0.7, size = 1.2) +
+  geom_smooth(method = "loess", se = TRUE, linewidth = 0.7) +
+  labs(
+    title = "Median Center-Based Childcare Prices by Child Age Group in California",
+    x     = "Year",
+    y     = "Median Weekly Price ($)",
+    color = "Care Type"
+  ) +
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  theme_minimal(base_size = 11)
 
 ```
 
@@ -818,6 +1428,18 @@ crime_scene_report |>
 
 ```{r}
 #| label: dsm-1-1
+# From Lab 10, I changed the last line to sum(reassigned == 1:n_babies) so it returns the number of correctly matched babies . This change is beneficial to my code because it gives me a simulated data from the underlying probability model and it  demonstrates that i am simulating outcomes from a random assignment process. I was able to make these changes with the help of a peer tutor. 
+
+randomBabies <- function(n_babies) {
+  reassigned <- sample(1:n_babies)           
+  sum(reassigned == 1:n_babies)             
+}
+
+set.seed(123)
+
+correct_babies <- map_int(1:10000, ~ randomBabies(4))
+
+head(correct_babies)
 
 ```
 
@@ -825,7 +1447,19 @@ crime_scene_report |>
 
 ```{r}
 #| label: dsm-1-2
+# Work from my Lab 10, I wrapped two steps into a reusable function called simulate_linear_data() that returns a tibble. This change is beneficial to my code because it makes the simulation pattern reusable for any combination of beta0, beta1, and sample size n. I made these changes with the help of a peer tutor.
+simulate_linear_data <- function(beta0, beta1, n) {
+  x  <- runif(n, 0, 1)               
+  ep <- rnorm(n, mean = 0, sd = 1)    
+  y  <- beta0 + beta1 * x + ep        
 
+  tibble(x = x, y = y)
+}
+
+set.seed(2024)
+sim_data <- simulate_linear_data(beta0 = 2, beta1 = 1, n = 100)
+
+head(sim_data)
 ```
 
 **DSSM-2: I can conduct common statistical analyses in R.**
@@ -834,6 +1468,10 @@ crime_scene_report |>
 
 ```{r}
 #| label: dsm-2-1
+# Work from my Lab 2
+
+species_mod <- aov(weight ~ species_id, data = surveys)
+summary(species_mod)
 
 ```
 
@@ -841,6 +1479,10 @@ crime_scene_report |>
 
 ```{r}
 #| label: dsm-2-2
+# Work from my Lab 4, this demonstrates my ability to fit and interpret a linear model using economic data.
+
+reg_mod1 <- lm(mfcc_infant ~ mhi_2018, data = ca_childcare)
+summary(reg_mod1)
 
 ```
 
@@ -848,6 +1490,11 @@ crime_scene_report |>
 
 ```{r}
 #| label: dsm-2-3
+# Work from my Lab 10, I simplified this to demonstrate i extracted the estimated slope and its 95% confidence interval. This change was beneficial to my code because it highlights my ability to work with model output "programmatically". I was able to make these edits with the helps with my peer tutor. 
+fit <- lm(y ~ x, data = observed_data)
+
+slope_results <- tidy(fit, conf.int = TRUE)
+slope_results
 
 ```
 
