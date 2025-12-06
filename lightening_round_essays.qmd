@@ -8,14 +8,19 @@ editor: visual
 
 1. Finish the sentence with another student’s name: "If [Name of Student] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
 
+If Kathrik does not earn an A, then truly no one should. Throughout our practice activities and group work together, he consistently demonstrated a deep understanding of the course material and was able to clearly explain code, syntax, and concepts in areas where I was struggling. His collaboration skills were exceptional, he contributed strong understanding based from the lectures, but he also approached our work with patience, clarity, and genuine support for his partner’s learning. His performance reflects mastery of the content and an commitment to collaborative learning.
 
-2. What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+2. What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why. 
+The most difficult part of the class for me was definitely understanding what was expected of me and adjusting to the structure and formatting of the course. In the beginning, I felt a little overwhelmed, not because the material itself was impossible, but because I was still figuring out how everything fit together, what the labs were looking for, how detailed my explanations needed to be, what “clean” code actually meant, and how to format things in a way that matched the style of the class. Once I started to understand the expectations of the class, the class began to feel much more manageable, and I could focus more on actually learning the concepts instead of worrying about whether I was doing everything correctly. 
 
 
-3. What was the easiest part of the class for you? Explain why.
+3. What was the easiest part of the class for you? Explain why. 
+The easiest part of the class for me was the collaborating assignements, not because the work in itself was easy but because being able to collabortae with my classmates, helped expand my thinking, and digest better what we learned in lecture at a more rapid pace. I was able to bounce ideas of my classmates, and get a better idea of how they felt they were doing in the class as well. 
 
 
 4. What part of the class surprised or interested you the most? Explain why.
+Something that surprised me the most was the grade formatting. I think there are both positives and negatives to the structure and grade structure of the class, but it was definetly something i wasnt used to and havent experience in other classes, so it definetly took me by surprise. 
 
 
-5. Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+5. Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning. 
+A piece of advise that i would give to a student that is just beggining a quarter of STAT 331 is to communicate with your teacher as much as possible. If you feel behind or you dont understand, make it clear to your teacher rom the beggining so that your able to grow and learn in the class with the support of your teacher, before turning to outside sources. Once you fall behind it becomes exremly difficult to climb back up and teach yourself the content, so communicate and pay attention during lecture and take notes on reading and videos. 
